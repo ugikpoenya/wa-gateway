@@ -11,6 +11,7 @@ type WebhookMessageBody = {
   session: string;
   from: string | null;
   message: string | null;
+  from_me: boolean | null;
 
   media: {
     image: string | null;
@@ -22,8 +23,8 @@ type WebhookMessageBody = {
 
 export const createWebhookMessage =
   (props: CreateWebhookProps) => async (message: MessageReceived) => {
-    if (message.key.fromMe || message.key.remoteJid?.includes("broadcast"))
-      return;
+    if (message.key.remoteJid?.includes("broadcast")) return; // exclude broadcast
+    if (message.key.remoteJid?.endsWith("@g.us")) return; // exclude group message
 
     const endpoint = `${props.baseUrl}/message`;
 
@@ -35,6 +36,7 @@ export const createWebhookMessage =
     const body = {
       session: message.sessionId,
       from: message.key.remoteJid ?? null,
+      from_me: message.key.fromMe ?? null,
       message:
         message.message?.conversation ||
         message.message?.extendedTextMessage?.text ||
