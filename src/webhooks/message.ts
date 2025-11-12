@@ -24,7 +24,10 @@ type WebhookMessageBody = {
 export const createWebhookMessage =
   (props: CreateWebhookProps) => async (message: MessageReceived) => {
     if (message.key.remoteJid?.includes("broadcast")) return; // exclude broadcast
+    if (message.key.remoteJid?.includes("newsletter")) return; // exclude newsletter
     if (message.key.remoteJid?.endsWith("@g.us")) return; // exclude group message
+
+    const remoteJid = [message.key.remoteJid, message.key.remoteJidAlt].find((j) => j?.includes("@s.whatsapp.net")) || message.key.remoteJid;
 
     const endpoint = `${props.baseUrl}/message`;
 
@@ -35,7 +38,7 @@ export const createWebhookMessage =
 
     const body = {
       session: message.sessionId,
-      from: message.key.remoteJid ?? null,
+      from: remoteJid ?? null,
       from_me: message.key.fromMe ?? null,
       message:
         message.message?.conversation ||
