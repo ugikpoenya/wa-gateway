@@ -10,8 +10,25 @@ export const createSessionController = () => {
   const app = new Hono();
 
   app.get("/", createKeyMiddleware(), async (c) => {
+    const allSessions = whatsapp.getAllSession();
+
+    const sessionList = allSessions.map((sessionName) => {
+      const ses = whatsapp.getSession(sessionName);
+      const name = ses?.user?.name ?? "";
+      const id = ses?.user?.id ?? "";
+      const lid = ses?.user?.lid ?? "";
+      const number = (ses?.user?.id ?? "").split(/[:@]/)[0];
+
+      let status = "disconnected";
+      if (ses) {
+        status = ses.user?.id ? "connected" : "waiting_for_scan";
+      }
+
+      return { session: sessionName, name, number, status, id, lid };
+    });
+
     return c.json({
-      data: whatsapp.getAllSession(),
+      data: sessionList,
     });
   });
 
