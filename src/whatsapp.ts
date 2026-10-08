@@ -25,8 +25,9 @@ const webhookMessage = createWebhookMessage(webhookProps);
 
 const adapter = env.REDIS_URL
   ? new RedisAdapter({
-      url: env.REDIS_URL,
-    })
+    url: env.REDIS_URL,
+    keyPrefix: env.REDIS_KEY_PREFIX,
+  })
   : new SQLiteAdapter();
 
 export const whatsapp = new Whatsapp({

@@ -11,5 +11,7 @@ export const env = z
       .transform((e) => Number(e)),
     WEBHOOK_BASE_URL: z.string().optional(),
     REDIS_URL: z.string().optional(),
+    REDIS_KEY_PREFIX: z.string().optional(),
+    REDIS_QUEUE_NAME: z.string().optional(),
   })
   .parse(process.env);
